@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - socket_net
+    volumes:
+      - ./server:/app
+    container_name: tcp_server
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    networks:
+      - socket_net
+    volumes:
+      - ./client:/app
+    depends_on:
+      - server
+    container_name: tcp_client
+
+networks:
+  socket_net:
+    driver: bridge

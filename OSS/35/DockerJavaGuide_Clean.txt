@@ -1,0 +1,105 @@
+
+Guide to Running Java Application with Docker
+
+=========================================================
+
+Step-by-Step Guide
+
+Step 1 - Create Your Project Directory
+Create a directory to hold your Dockerfile and Java application.
+
+Commands:
+mkdir java-docker-app
+cd java-docker-app
+
+---------------------------------------------------------
+
+Step 2 - Write Your Java Application
+Inside the java-docker-app directory, create a simple Java file named Code.java that prints a message.
+
+Code.java:
+public class Code {
+    public static void main(String[] args) {
+        System.out.println("Hello, World from Docker with Code.java!");
+    }
+}
+
+---------------------------------------------------------
+
+Step 3 - Write the Dockerfile
+Create a file named Dockerfile (no file extension) in the same directory. Below is the Dockerfile content:
+
+Dockerfile:
+FROM ubuntu:latest
+
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get clean;
+
+WORKDIR /app
+
+COPY Code.java .
+
+RUN javac Code.java
+
+CMD ["java", "Code"]
+
+---------------------------------------------------------
+
+Step 4 - Build the Docker Image
+Open a terminal in the java-docker-app directory and build the Docker image.
+
+Command:
+docker build -t java-code-app .
+
+---------------------------------------------------------
+
+Step 5 - Run the Docker Container
+After building the image, run it as a container.
+
+Command:
+docker run --rm java-code-app
+
+Expected output:
+Hello, World from Docker with Code.java!
+
+=========================================================
+
+Optional - Running the Java Application from Inside the Container
+
+Step 6 - Start the Container in Interactive Mode
+Run the container in interactive mode with a shell.
+
+Command:
+docker run -it --name java-code-container java-code-app /bin/bash
+
+---------------------------------------------------------
+
+Step 7 - Run the Java Application Inside the Container
+Once inside the container, navigate to the /app directory (if not already there) and run:
+
+Command:
+java Code
+
+Expected output:
+Hello, World from Docker with Code.java!
+
+---------------------------------------------------------
+
+Step 8 - Exit the Container
+Once you're done, you can exit the container.
+
+Command:
+exit
+
+---------------------------------------------------------
+
+Alternative - Reattach to a Running Container
+To re-enter a running container:
+
+Command:
+docker exec -it java-code-container /bin/bash
+
+=========================================================
+
+With this guide, you should be able to run Code.java inside a Docker container both automatically and interactively.

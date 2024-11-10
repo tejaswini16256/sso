@@ -1,0 +1,13 @@
+1.Create a new directory for the project:
+    mkdir simple-web-app
+    cd simple-web-app
+
+2.Create a Python file named app.py for the HTTP server.
+    touch app.py
+
+3  write app.py
+4. write DockerFile
+
+5.docker build -t simple-web-app .
+6.docker run -p 5000:5000 simple-web-app
+

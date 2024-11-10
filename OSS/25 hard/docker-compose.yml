@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"  # Maps port 80 in the container to port 8080 on your local machine
+    depends_on:
+      - mysql  # Ensures that the MySQL service starts before NGINX
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: Mahesh@123  # Set your root password
+      MYSQL_DATABASE: mydatabase         # Default database name
+      MYSQL_USER: myuser                 # MySQL user
+      MYSQL_PASSWORD: mypassword         # MySQL user password
+    ports:
+      - "3309:3306"  # Expose MySQL on port 3306 for local access
+ 
+
+

@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  apache:
+    image: php:8.0-apache
+    container_name: apache
+    ports:
+      - "8081:80"
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - lamp_network
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    command: /bin/bash -c "apt-get update && apt-get install -y default-mysql-client && docker-php-ext-install mysqli && apache2-foreground"
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+    networks:
+      - lamp_network
+
+networks:
+  lamp_network:
+    driver: bridge
+

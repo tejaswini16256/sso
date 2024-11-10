@@ -1,0 +1,58 @@
+
+# Docker Setup for Shared Memory Communication Between Two Containers
+
+## Step 1: Create a Docker Volume for Shared Memory
+This volume will act as the shared memory between the two containers.
+
+```bash
+docker volume create shared_data
+```
+
+## Step 2: Build Docker Images for the Writer and Reader Applications
+These images will be built using the respective Dockerfiles for the writer and reader applications.
+
+1. Build the writer application image:
+    ```bash
+    docker build -t writer_app -f Dockerfile.writer .
+    ```
+
+2. Build the reader application image:
+    ```bash
+    docker build -t reader_app -f Dockerfile.reader .
+    ```
+
+## Step 3: Run the Writer Container
+This container will write messages to a shared file located in the `shared_data` volume. Running it in interactive mode (`-it`) allows you to see its output directly.
+
+```bash
+docker run --rm -it --name writer_container --mount source=shared_data,target=/shared_data writer_app
+```
+
+## Step 4: Run the Reader Container
+This container will read messages from the shared file in the `shared_data` volume. Running it in interactive mode (`-it`) allows you to see its output directly.
+
+```bash
+docker run --rm -it --name reader_container --mount source=shared_data,target=/shared_data reader_app
+```
+
+## Additional Notes:
+- The `--rm` flag automatically removes the containers after they exit.
+- `--mount source=shared_data,target=/shared_data` mounts the `shared_data` volume to the `/shared_data` directory in both containers, enabling communication via shared memory.
+- To check logs and see if the shared file communication is working correctly, you can run both containers and observe the output in real-time.
+
+## Troubleshooting:
+If you encounter issues with container names already in use or empty logs, use the following commands:
+- **Remove existing containers**:
+    ```bash
+    docker rm -f writer_container
+    docker rm -f reader_container
+    ```
+- **Verify volume mounting**:
+    Inspect containers to ensure the `shared_data` volume is correctly mounted.
+
+    ```bash
+    docker inspect writer_container
+    docker inspect reader_container
+    ```
+
+This setup should successfully demonstrate inter-container communication using shared memory in Docker.

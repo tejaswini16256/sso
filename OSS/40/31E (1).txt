@@ -1,0 +1,96 @@
+ 31.   Create a  LAMP Stack container and host a web application of your own.
+
+ # Setting up LAMP Stack Container with Student Registration Application
+
+## Step 1: Project Setup
+1. Create a project directory:
+```bash
+mkdir lampstack
+cd lampstack
+```
+
+2. Create app directory and copy the application files (index.php, style.css, form.php)
+```bash
+mkdir app
+```
+
+## Step 2: Docker Setup
+1. Pull the LAMP stack Docker image:
+```bash
+docker pull mattrayner/lamp:latest-1604
+```
+
+2. Run Docker container with volume bindings and port mapping:
+```bash
+docker run -d -p 80:80 -v ${PWD}/app:/app -v ${PWD}/mysql:/var/lib/mysql mattrayner/lamp:latest-1604
+```
+
+## Step 3: Database Setup
+1. Get container ID and access bash:
+```bash
+docker ps                              # Note the container ID
+docker exec -it <container_id> /bin/bash
+```
+
+2. Access MySQL:
+```bash
+mysql -u root
+```
+
+3. Set up database and table:
+```sql
+-- Create database
+CREATE DATABASE student_db;
+
+-- Switch to database
+USE student_db;
+
+-- Create students table
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    prn VARCHAR(50)
+);
+
+-- Create admin user
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'your_password';
+
+-- Grant privileges
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+
+-- Apply privileges
+FLUSH PRIVILEGES;
+```
+
+4. Verify setup:
+```sql
+-- Check data (after adding records)
+SELECT * FROM students;
+```
+
+## Step 4: Access Application
+1. Open web browser and navigate to:
+```
+http://localhost:80
+```
+
+2. You can now:
+- Register new students
+- Data will be stored in MySQL database
+- View entries using the SELECT command in MySQL
+
+Note: Remember to replace 'your_password' with your chosen password in both:
+- MySQL user creation command
+- Database connection settings in form.php
+
+
+
+
+
+
+
+
+
+
+
+

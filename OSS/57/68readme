@@ -1,0 +1,116 @@
+Telnet and FTP Setup on CentOS Container
+
+Step 1: Telnet Configuration
+Run CentOS Container:
+
+bash
+Copy code
+docker run --privileged -ti centos:centos6 bash
+Update Repository:
+
+bash
+Copy code
+cd /etc/yum.repos.d/
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+Install Telnet Packages:
+
+bash
+Copy code
+yum install telnet telnet-server -y
+yum install net-tools nano passwd -y
+Edit Telnet Config File (/etc/xinetd.d/telnet):
+
+Open the file in Nano editor:
+bash
+Copy code
+nano /etc/xinetd.d/telnet
+Change disable = yes to disable = no
+Add New User:
+
+bash
+Copy code
+useradd newuser
+passwd newuser
+Restart Telnet Service:
+
+bash
+Copy code
+service xinetd restart
+Get Container IP:
+
+bash
+Copy code
+ifconfig
+Use the IP to connect from another machine:
+
+bash
+Copy code
+telnet <container-ip>
+Step 2: FTP Configuration
+Install vsftpd:
+
+bash
+Copy code
+yum install vsftpd -y
+yum install net-tools passwd nano -y
+Start vsftpd Service:
+
+bash
+Copy code
+service vsftpd start
+Edit vsftpd Config File (/etc/vsftpd/vsftpd.conf):
+
+Update these settings in the file:
+text
+Copy code
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+chroot_local_user=YES
+userlist_enable=YES
+userlist_file=/etc/vsftpd/user_list
+userlist_deny=NO
+Add FTP User:
+
+bash
+Copy code
+useradd testuser
+passwd testuser
+Edit User List (/etc/vsftpd/user_list):
+
+Add testuser to a new line.
+Set Directory Permissions for FTP Access:
+
+bash
+Copy code
+mkdir -p /home/testuser/ftp/upload
+chmod 550 /home/testuser/ftp
+chmod 750 /home/testuser/ftp/upload
+chown -R testuser: /home/testuser/ftp
+Restart vsftpd Service:
+
+bash
+Copy code
+service vsftpd restart
+Access FTP Server from Another Machine:
+
+Get container IP:
+bash
+Copy code
+ifconfig | grep inet
+Connect to FTP:
+bash
+Copy code
+ftp <container-ip>
+Log in with testuser, navigate to upload folder, and download files:
+bash
+Copy code
+cd ftp/upload
+get <filename>
+
+Resources:
+
+https://www.ucartz.com/clients/knowledgebase/1395/How-to-install-and-configure-telnet-CentOS-or-RHEL-7.html
+https://phoenixnap.com/kb/how-to-setup-ftp-server-install-vsftpd-centos-7
+

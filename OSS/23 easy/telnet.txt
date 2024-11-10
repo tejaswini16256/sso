@@ -1,0 +1,79 @@
+1. Create a New User
+
+You first need to create a new user on the system if you haven't already. You can use the following commands:
+
+    Add a new user:
+
+sudo adduser newuser
+
+Replace newuser with the username you want to create.
+
+Set a password for the new user:
+
+    sudo passwd newuser
+
+    Enter the password when prompted.
+
+2. Check or Modify the Telnet Configuration
+
+Ensure that the Telnet service is configured to allow logins for the new user. This is typically managed via xinetd or telnetd.
+
+    Locate the Telnet configuration file:
+
+    The configuration file for Telnet service is usually located in the /etc/xinetd.d/ directory. You need to make sure that Telnet is enabled and configured correctly to accept user logins.
+
+    Open the configuration file:
+
+sudo nano /etc/xinetd.d/telnet
+
+Configure the Telnet service to allow the user:
+
+Ensure that the file has the following basic settings:
+
+service telnet
+{
+    disable = no
+    socket_type = stream
+    wait = no
+    user = root
+    server = /usr/sbin/in.telnetd
+    log_on_failure += USERID
+}
+
+In the user = root line, you can change it to the user that you want Telnet to run as (though running Telnet as root is not recommended for security reasons).
+
+Ensure Telnet is allowed to run:
+
+The disable = no line is crucial, as it enables the Telnet service. If it's set to yes, Telnet will be disabled.
+
+Restart xinetd:
+
+After making changes, restart xinetd to apply the new settings:
+
+    sudo systemctl restart xinetd
+
+3. Allow User Through Firewall
+
+If you're using a firewall like ufw, you might need to allow the Telnet port (port 23) through the firewall:
+
+sudo ufw allow 23/tcp
+sudo ufw reload
+
+4. Check User Permissions
+
+If the Telnet service is configured to allow logins and you’ve created the new user, ensure that the user has the necessary permissions to log in. For this, check /etc/passwd and /etc/group files to ensure the user isn't restricted from logging in.
+
+    Check the /etc/passwd file:
+
+    cat /etc/passwd | grep newuser
+
+    This should show an entry for newuser.
+
+5. Log in Using Telnet
+
+Once you've created the user and configured Telnet, you should be able to log in using Telnet with the new user credentials:
+
+telnet localhost
+
+    Enter the username: newuser
+    Enter the password: [password you set for newuser]

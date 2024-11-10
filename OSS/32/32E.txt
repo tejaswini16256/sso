@@ -1,0 +1,25 @@
+32.   Create & Demonstrate the container of a particular distro and show  all dockerfile fields
+ Step 1:   create  a cpp file sample.cpp ( write any cpp program )
+Step 2 : create a docker file as follows : 
+(As a distro  here ubuntu is used …)
+FROM ubuntu:latest 
+
+RUN apt-get update && apt-get install -y build-essential
+
+WORKDIR /app
+
+COPY sample.cpp .
+
+RUN g++ sample.cpp -o sample
+
+CMD ["./sample"]
+
+
+Step 3 :   go to  the file directory and   build docker image using command   :    
+                docker build -t my-cpp-app . 
+Step 4 : run the image in a container  using command : 
+                docker run my-cpp-app 
+
+
+
+

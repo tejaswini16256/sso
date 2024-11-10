@@ -1,0 +1,99 @@
+45.  Create a web application with simple web page containing login details and create a docker image of the application.(Use Apache Web server) 
+ Step 1: Create the HTML login page
+Create a file named `index.html` with the following content:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    /* Add some basic styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    
+    .login-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+      <button type="submit">Log in</button>
+    </form>
+  </div>
+</body>
+</html>
+```
+---------------------------------------------------------------------------------------------------------------------------------
+ Step 2: Create a Dockerfile
+Create a file named `Dockerfile` with the following content:
+
+```dockerfile
+# Use the official Apache image as the base image
+FROM httpd:2.4
+
+# Copy the HTML file to the Apache document root
+COPY index.html /usr/local/apache2/htdocs/
+```
+-----------------------------------------------------------------------------------------------------------------------------------------
+Step 3: Build the Docker image
+Open a terminal or command prompt and navigate to the directory containing the `index.html` and `Dockerfile` files. Then, run the following command to build the Docker image:
+
+```
+docker build -t login-web-app .
+
+```
+-------------------------------------------------------------------------------------------------------------------------
+Step 4: Run the Docker container
+After the image is built, you can run the container with the following command:
+```
+docker run -d -p 80:80 login-web-app
+```
+------------------------------------------------
+go to localhost:80 
+
+
+

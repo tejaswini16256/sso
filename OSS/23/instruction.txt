@@ -1,0 +1,14 @@
+1.create a app.py
+2.write a code
+3.create a dockerfile
+4.write dockerfile
+5.install flask
+    pip install flask
+     
+       if this is not work,follow following commads
+          -python3 -m venv venv
+          -source venv/bin/activate
+          -pip install Flask
+6.for the dockerization
+    -docker build -t flask-login-app .
+    -docker run -p 7000:7000 flask-login-app

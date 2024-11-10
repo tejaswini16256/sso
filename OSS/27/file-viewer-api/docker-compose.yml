@@ -1,0 +1,11 @@
+version: '3'
+services:
+  file-viewer:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - HOST_DIR=/mounted
+    volumes:
+      - ./host-directory:/mounted

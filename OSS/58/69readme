@@ -1,0 +1,142 @@
+NIS and NFS Setup on CentOS Containers
+
+Step 1: NIS Configuration
+Run NIS Server and Client Containers:
+
+bash
+Copy code
+docker run --name nisserver --privileged -it centos:centos6 /bin/bash
+docker run --name nisclient --privileged -it centos:centos6 /bin/bash
+Server Container Setup:
+
+Update Repository:
+bash
+Copy code
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+yum -y update
+yum -y install rpcbind ypserv nano passwd
+Set Hostname and Domain:
+bash
+Copy code
+hostname srvr
+ypdomainname oss.lab
+Configure Network:
+Edit /etc/sysconfig/network and add:
+text
+Copy code
+NISDOMAIN=oss.lab
+Allow Network Access:
+bash
+Copy code
+yum install net-tools -y
+nano /var/yp/securenets
+Add IP range:
+text
+Copy code
+255.255.0.0 172.17.0.0
+Update /etc/hosts with server and client IPs:
+bash
+Copy code
+nano /etc/hosts
+Add:
+text
+Copy code
+<server-ip> srvr.oss.lab srvr
+<client-ip> clnt.oss.lab clnt
+Start Services:
+
+bash
+Copy code
+service rpcbind restart
+service ypserv restart
+service ypxfrd restart
+service yppasswdd restart
+/usr/lib64/yp/ypinit -m
+Press Ctrl+D and confirm by typing y.
+Create Users and Groups:
+
+bash
+Copy code
+useradd newuser1
+passwd newuser1
+groupadd group1
+usermod -aG group1 newuser1
+cd /var/yp/
+make
+Client Container Configuration:
+
+Update Repository and Install Packages:
+
+bash
+Copy code
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+yum -y update
+yum -y install ypbind rpcbind authconfig nano
+Set Domain and Update /etc/hosts:
+
+bash
+Copy code
+ypdomainname oss.lab
+nano /etc/hosts
+Add server and client IPs as before.
+
+Enable NIS:
+
+bash
+Copy code
+authconfig --enablenis --nisdomain=oss.lab --nisserver=srvr.oss.lab --enablemkhomedir --update
+service ypbind restart
+Test User Access:
+
+bash
+Copy code
+su - newuser1
+Step 2: NFS Configuration
+Set up Host Directory for NFS:
+
+bash
+Copy code
+mkdir /mnt/nfsshare
+Mount Host Directory in Container:
+
+bash
+Copy code
+docker run --privileged -it -v /mnt/nfsshare:/mnt/nfsshare centos:centos6 /bin/bash
+Server Configuration:
+
+Install and Configure NFS:
+bash
+Copy code
+yum install -y nfs-utils nano net-tools
+nano /etc/exports
+Add export entry:
+text
+Copy code
+/mnt/nfsshare <client-ip>(rw,sync)
+Export and Start Services:
+bash
+Copy code
+exportfs -arv
+rpcbind
+rpc.nfsd
+rpc.mountd
+rpc.statd
+Client Configuration:
+
+Create Directory for Mount:
+bash
+Copy code
+mkdir clientshare
+Mount NFS Directory:
+bash
+Copy code
+showmount -e <server-ip>
+sudo mount -t nfs <server-ip>:/mnt/nfsshare/ clientshare/
+You should now access files from /mnt/nfsshare on the client.
+
+Additional Resources:
+
+NIS Setup Guide: https://www.server-world.info/en/note?os=CentOS_7&p=nis&f=1
+NFS Setup Guide: https://www.tecmint.com/install-nfs-server-on-centos-8/

@@ -1,0 +1,156 @@
+Steps to Set Up FTP and Allow a New User to Access the FTP Server:
+1. Install FTP Server
+
+For FTP, we'll use vsftpd (Very Secure FTP Daemon), which is one of the most commonly used FTP servers.
+
+Run the following commands to install it:
+
+sudo apt update
+sudo apt install vsftpd
+
+This will install the FTP server.
+2. Create a New User for FTP Access
+
+You can create a new user that will be able to access the FTP server.
+
+    Create the user:
+
+sudo adduser newuser
+
+Replace newuser with the desired username.
+
+Set the password for the new user:
+
+    sudo passwd newuser
+
+    Enter the password for newuser when prompted.
+
+3. Configure vsftpd for FTP Access
+
+Now, you need to configure vsftpd to allow FTP access.
+
+    Open the vsftpd configuration file:
+
+sudo nano /etc/vsftpd.conf
+
+Modify the configuration to allow the user to connect:
+
+    Make sure the following lines are present and set as shown:
+
+        listen=YES
+        listen_ipv6=NO
+        anonymous_enable=NO
+        local_enable=YES
+        write_enable=YES
+        chroot_local_user=YES
+        allow_writeable_chroot=YES
+
+        Explanation of settings:
+            listen=YES: Allows vsftpd to listen on IPv4.
+            listen_ipv6=NO: Disable IPv6 listening.
+            anonymous_enable=NO: Disables anonymous FTP login (ensure only registered users can log in).
+            local_enable=YES: Allows local users to log in.
+            write_enable=YES: Allows write access (uploading files).
+            chroot_local_user=YES: Chroots (locks) users to their home directory for security.
+            allow_writeable_chroot=YES: Allows writing in the chrooted environment.
+
+    Save the file and exit:
+        Press CTRL + X, then Y to save, and Enter to confirm.
+
+4. Restart vsftpd Service
+
+Once the configuration is updated, restart the vsftpd service to apply the changes:
+
+sudo systemctl restart vsftpd
+
+5. Allow FTP Through the Firewall (if applicable)
+
+If you're using a firewall like UFW (Uncomplicated Firewall), you will need to allow FTP traffic (ports 20 and 21) through.
+
+sudo ufw allow 20/tcp
+sudo ufw allow 21/tcp
+sudo ufw reload
+
+6. Verify FTP Service is Running
+
+To check if vsftpd is running, use the following command:
+
+sudo systemctl status vsftpd
+
+You should see something like:
+
+● vsftpd.service - VSFTPD FTP server
+   Loaded: loaded (/lib/systemd/system/vsftpd.service; enabled; vendor preset: enabled)
+   Active: active (running) since ...
+
+7. Log in Using FTP
+
+Once the FTP server is running, you can test logging in with your new user.
+
+    Connect using FTP:
+
+ftp localhost
+
+Enter the username: Enter the new username you created (newuser).
+
+    Name (localhost:your-username): newuser
+
+    Enter the password: Type the password for newuser.
+
+8. Upload/Download Files
+
+Once logged in, you can use FTP commands to upload or download files:
+
+    To list files in the current directory:
+
+ls
+
+To upload a file:
+
+put filename
+
+To download a file:
+
+get filename
+
+To change directories:
+
+cd directory_name
+
+To exit the FTP session:
+
+    bye
+
+9. Secure FTP (Optional)
+
+By default, FTP is insecure as it sends data (including passwords) in plaintext. If security is a concern, you should consider setting up FTPS (FTP Secure) or SFTP (SSH File Transfer Protocol), which encrypts the communication.
+
+To set up FTPS or SFTP, you would need additional configuration (e.g., SSL certificates for FTPS or enabling SSH for SFTP).
+Summary of Commands
+
+    Install vsftpd:
+
+sudo apt install vsftpd
+
+Create a new user:
+
+sudo adduser newuser
+sudo passwd newuser
+
+Configure vsftpd (Edit /etc/vsftpd.conf):
+
+sudo nano /etc/vsftpd.conf
+
+Restart vsftpd:
+
+sudo systemctl restart vsftpd
+
+Allow FTP through UFW firewall:
+
+sudo ufw allow 20/tcp
+sudo ufw allow 21/tcp
+sudo ufw reload
+
+Test FTP login:
+
+ftp localhost
